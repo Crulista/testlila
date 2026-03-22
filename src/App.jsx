@@ -221,19 +221,26 @@ export default function App() {
 
   /* ── Load initial data ── */
   useEffect(() => {
-    Promise.all([
-      fetch('./data/match_index.json').then(r => r.json()),
-      fetch('./data/heatmaps.json').then(r => r.json()),
-      fetch('./data/daily_stats.json').then(r => r.json()),
-    ]).then(([matches, heatmaps, stats]) => {
-      setMatchIndex(matches)
-      setHeatmapData(heatmaps)
-      setDailyStats(stats)
-      setLoading(false)
-    }).catch(err => {
-      console.error('Failed to load data:', err)
-      setLoading(false)
-    })
+  Promise.all([
+    fetch('/matches.json').then(r => r.json()),
+    fetch('./data/heatmaps.json').then(r => r.json()),
+    fetch('./data/daily_stats.json').then(r => r.json()),
+  ]).then(([matches, heatmaps, stats]) => {
+
+  // Convert object → array
+    const matchArray = Object.entries(matches).map(([id, value]) => ({
+      match_id: id,
+      ...value
+  }))
+
+  console.log("TOTAL MATCHES:", matchArray.length)
+
+  // ✅ Set correct state
+  setMatchIndex(matchArray)
+  setHeatmapData(heatmaps)
+  setDailyStats(stats)
+  setLoading(false)
+})
   }, [])
 
   /* ── Load match data when selected ── */
